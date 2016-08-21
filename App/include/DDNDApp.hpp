@@ -2,6 +2,8 @@
 #define DDNDAPP_HPP
 
 #include "CRApp.hpp"
+#include "CRTileMapManager.hpp"
+#include "CRGroupManager.hpp"
 
 class DDNDApp : public App
 {
@@ -9,7 +11,12 @@ class DDNDApp : public App
         ///////////////
         // VARIABLES //
         ///////////////
-        GroupManager _groups;
+
+        /// The GroupManager to handle entities
+        CRE::GroupManager _groups;
+
+        /// The TileMapManager to handle tilemaps
+        CRE::TileMapManager _tilemaps;
 
         /**
         *
