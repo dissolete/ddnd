@@ -65,6 +65,6 @@ class PlayState : public CRE::State
         *
         */
         virtual void handle_cleanup(void);
-}
+};
 
 #endif

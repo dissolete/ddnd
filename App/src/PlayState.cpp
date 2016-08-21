@@ -40,9 +40,14 @@ void PlayState::update()
 
 }
 
-void PlayState::update_variable()
+void PlayState::update_variable(float elaspedTime)
 {
 
+}
+
+void PlayState::draw()
+{
+    
 }
 
 void PlayState::handle_cleanup()
