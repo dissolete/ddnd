@@ -1,0 +1,434 @@
+#include "CRTileMap.hpp"
+
+namespace CRE
+{
+
+    TileMap::TileMap(std::string tileMapID, std::string filename) :
+        _pugiDoc(),
+        _tileMapID(tileMapID),
+        _errorMessage("No error"),
+        _fileName(filename),
+        _tileDataLoaded(false),
+        _widthInPixels(0),
+        _heightInPixels(0),
+        _tileWidth(0),
+        _tileHeight(0),
+        _widthInTiles(0),
+        _heightInTiles(0),
+        _tileSetVector(),
+        _layerVector(),
+        _stitchedLayers(),
+       // _objectVector()
+        _objectGroup()
+    {
+        // // Load pugi document
+        // pugi::xml_parse_result result = _pugiDoc.load_file(filename.c_str(), 
+        //     pugi::parse_default|pugi::parse_declaration);
+
+        // // Set bool for successful load or not
+        // _tileDataLoaded = result ? true : false;
+
+        // std::cout << _pugiResult.description() << std::endl;
+
+        // pugi::xml_node root = _pugiDoc.document_element();
+
+        // std::cout << root.child("layer").attribute("name").value();
+        // for (pugi::xml_attribute attr: root.attributes())
+        // {
+        //     std::cout << " " << attr.name() << "=" << attr.value();
+        // }
+        // for (pugi::xml_node child: root.children())
+        // {
+        //     std::cout << ", child " << child.name();
+        //     for (pugi::xml_attribute attr: child.attributes())
+        //     {
+        //         std::cout << " " << attr.name() << "=" << attr.value();
+        //     }
+        // }
+    }
+
+    TileMap::~TileMap()
+    {
+        // Cleanly empty the contents of the TileMap's entityManager
+        _objectGroup.clear();
+    }
+
+    bool TileMap::load_data()
+    {
+
+        // Load pugi document into memory
+        pugi::xml_parse_result result = _pugiDoc.load_file(_fileName.c_str(), 
+            pugi::parse_default|pugi::parse_declaration|pugi::parse_cdata);
+
+        // Set bool for successful load or not
+        _tileDataLoaded = (result.description() == "No error") or result;
+
+        // Set error message. If there was not error, this string gets set to "No error"
+        _errorMessage = result.description();
+
+        return _tileDataLoaded;
+
+    }
+
+    bool TileMap::is_loaded()
+    {
+        return _tileDataLoaded;
+    }
+
+    std::string TileMap::get_error()
+    {
+        return _errorMessage;
+    }
+
+    void TileMap::parse_data()
+    {
+        // Parse data only if the load was successful
+        if( _tileDataLoaded )
+        {
+            // Get head node for the document tree
+            pugi::xml_node root = _pugiDoc.document_element();
+
+            // Get map width and height in tiles
+            // Data is returned as a char* so we must convert to int
+            _widthInTiles = std::atoi( root.attribute("width").value() );
+            _heightInTiles = std::atoi( root.attribute("height").value() );
+
+            // Get tile width and height in pixels
+            _tileWidth = std::atoi( root.attribute("tilewidth").value() );
+            _tileHeight = std::atoi( root.attribute("tileheight").value() );
+
+            // Calculate height and width of map in pixels
+            _widthInPixels = _tileWidth * _widthInTiles;
+            _heightInPixels = _tileHeight * _heightInTiles;
+
+            // Temp tileset used to store data before adding it to the
+            // tileSetVector.
+            // Temp layer used to store layer data before adding it to the
+            // layerVector
+            TileSet tempTileSet;
+            Layer tempLayer;
+            TileMapObject * object;
+            int posX, posY;
+            unsigned int objectWidth, objectHeight;
+            std::string objectID;
+
+            // Iterate through the document tree to gather information about
+            // the layers and tilesets
+            for(pugi::xml_node child : root.children())
+            {
+                std::cout << "child: " << child.name() << std::endl;
+                // If this child node is a tileset, we need to create a new
+                // tileset
+                if(std::string(child.name()) == "tileset")
+                {
+                    // Get firstGid
+                    tempTileSet._firstGid = std::atoi(child.attribute("firstgid").value());
+
+                    // Get tileWidth
+                    tempTileSet._tileWidth = std::atoi(child.attribute("tilewidth").value());
+
+                    // Get tileheight
+                    tempTileSet._tileHeight = std::atoi(child.attribute("tileheight").value());
+
+                    // Get tileCount
+                    tempTileSet._tileCount = std::atoi(child.attribute("tilecount").value());
+
+                    // Get num columns
+                    tempTileSet._columns = std::atoi(child.attribute("columns").value());
+
+                    // Get tileSetID
+                    tempTileSet._tileSetID = std::string(child.attribute("name").value());
+
+                    // Get image source for the tileSet
+                    tempTileSet._imageSource = "Resources/" + std::string(child.child("image").attribute("source").value());
+
+                    // Get image width and height
+                    tempTileSet._imageWidth = std::atoi(child.child("image").attribute("width").value());
+                    tempTileSet._imageHeight = std::atoi(child.child("image").attribute("height").value());
+
+                    tempTileSet._tileSetTexture.loadFromFile(tempTileSet._imageSource);
+
+                    // And finally, add this tempTileSet to the tileSetVector
+                    _tileSetVector.push_back(tempTileSet);
+
+                    // std::cout << tempTileSet._firstGid << std::endl;
+                    // std::cout << tempTileSet._tileWidth << std::endl;
+                    // std::cout << tempTileSet._tileHeight << std::endl;
+                    // std::cout << tempTileSet._tileCount << std::endl;
+                    // std::cout << tempTileSet._columns << std::endl;
+                    // std::cout << tempTileSet._tileSetID << std::endl;
+                    // std::cout << tempTileSet._imageSource << std::endl;
+                    // std::cout << tempTileSet._imageWidth << std::endl;
+                    // std::cout << tempTileSet._imageHeight << std::endl;
+
+                }// if(std::string(child.name()) == "tileset")
+                else if(std::string(child.name()) == "layer")
+                {
+                    std::cout << "This is a layer." << std::endl;
+
+                    tempLayer._layerName = std::string(child.attribute("name").value());
+
+                    tempLayer._width = std::atoi(child.attribute("width").value());
+                    tempLayer._height = std::atoi(child.attribute("height").value());
+
+                    //std::cout << child.child("data").child_value() << std::endl;
+
+                    tempLayer.parse_raw_layer_data(std::string(child.child("data").child_value()));
+
+                    // for(auto const &i : tempLayer._gidCodes)
+                    //     std::cout << i << ", ";
+
+                    _layerVector.push_back(tempLayer);
+
+                    tempLayer._gidCodes.clear();
+
+                    // for(pugi::xml_node tempChild : child.children())
+                    // {
+                    //     std::cout << tempChild.name() << std::endl;
+                    //     //std::cout << tempChild.attribute()
+                    //     std::cout << tempChild.child_value() << std::endl;
+                    // }
+                }
+                else if(std::string(child.name()) == "objectgroup")
+                {
+                    //TODO: Map of vectors
+                    // so that each object group would be its own vector in
+                    // the map.
+                    // Or an entity manager <--- currently using this
+                    pugi::xml_node objectNode = child.child("object");
+
+                    // Iterate through the children of the object group
+                    // We will specify specific types as follows:
+                    // Collision-rect for objects that are rectangles
+                    // Collision-ellipse for objects that are circles
+                    // Collision-polygon for objects defined by polygons
+                    if( std::string(child.attribute("name").value()) == "Collision-rect")
+                    {
+                        // Get the ID of the object
+                        objectID = std::string(objectNode.attribute("id").value());
+
+                        // Get the X and Y position
+                        posX = std::atoi(objectNode.attribute("x").value());
+                        posY = std::atoi(objectNode.attribute("y").value());
+
+                        // Get width and height
+                        objectWidth = std::atoi(objectNode.attribute("width").value());
+                        objectHeight = std::atoi(objectNode.attribute("height").value());
+
+                        // Create new entity with these values
+                        object = new TileMapObject(posX, posY, objectWidth, objectHeight);
+
+                        // Add this entity to the tilemap's entitymanager
+                        _objectGroup.add_entity("Rect: " + objectID, object);
+
+                        // Remove local pointer
+                        object = NULL;
+                    }
+                    // for( pugi::xml_node objectNode : child.children() )
+                    // {
+                    //     // Check if the object is a collision type object
+                    //     if( std::string(objectNode.name()) == "")
+                    // }
+
+                }
+            }
+
+            //std::cout << root.child("layer").attribute("name").value();
+        //std::cout << root.attribute("width").value() << std::endl;
+        // for (pugi::xml_attribute attr: root.attributes())
+        // {
+        //     std::cout << attr.name() /*<< "=" << attr.value()*/ << std::endl;
+        // }
+        // for (pugi::xml_node child: root.children())
+        // {
+        //     std::cout << ", child " << child.name();
+        //     for (pugi::xml_attribute attr: child.attributes())
+        //     {
+        //         std::cout << " " << attr.name() << "=" << attr.value() << std::endl;
+        //     }
+        // }
+            
+
+        } // if( _tileDataLoaded )
+
+        //std::cout << root.child("layer").attribute("name").value();
+        //std::cout << root.attribute("width").value() << std::endl;
+        // for (pugi::xml_attribute attr: root.attributes())
+        // {
+        //     std::cout << attr.name() /*<< "=" << attr.value()*/ << std::endl;
+        // }
+        // for (pugi::xml_node child: root.children())
+        // {
+        //     std::cout << ", child " << child.name();
+        //     for (pugi::xml_attribute attr: child.attributes())
+        //     {
+        //         std::cout << " " << attr.name() << "=" << attr.value() << std::endl;
+        //     }
+        // }
+    }
+
+    void TileMap::stitch_layers()
+    {
+
+
+        // We can only stitch the layers together if the data has been loaded
+        if(_tileDataLoaded)
+        {
+            // Oh boy... Here we go.
+            //std::vector<sf::Texture> tilesheets;
+            sf::Texture tempTexture;
+            TileSet tempTileSet;
+            sf::Sprite layerToBeStitched;
+            sf::VertexArray tempVArray;
+            tempVArray.setPrimitiveType(sf::Quads);
+            int tileX, tileY, tileW, tileH, i =0, j =0;
+
+            // // Iterate through tilesets and load up textures using sprite/tilesheets
+            // for(TileSet thisSet : _tileSetVector)
+            // {
+            //     tempTexture.loadFromFile(thisLayer._imageSource);
+            //     tilesheets.push_back(tempTexture);
+            // }
+
+            // Iterate through layers, this time we will be building the
+            // the layer sprites that will be drawn
+            for(Layer thisLayer : _layerVector)
+            {   
+                // Create a vertex array that is the size of this layer
+                tempVArray.resize(thisLayer._width * thisLayer._height * 4);
+
+                // Iterate through the gidCodes
+                for(unsigned int gid : thisLayer._gidCodes)
+                {
+                    // Get the tile number
+                    // Tiled does not start its gids at 0, so we need to decrement 1
+                    // for our math to work out
+                    int tGid = gid - 1;
+
+                    // Get a reference to the correct tileset that contains the gid
+                    tempTileSet = get_tileset_with_gid(gid);
+
+                    // Get a reference to this tileset's texture
+                    tempTexture = tempTileSet._tileSetTexture;
+
+                    // tileNumber / (m_tileset.getSize().x / tileSize.x);
+                    int tu = tGid % (tempTileSet._imageWidth / tempTileSet._tileWidth);
+                    int tv = tGid / (tempTileSet._imageWidth / tempTileSet._tileWidth);
+
+                    // Get a pointer to the current tile's quad
+                    sf::Vertex * quad = &tempVArray[(i + j * thisLayer._width) * 4];
+
+                    // define its 4 corners
+                    quad[0].position = sf::Vector2f(i * tempTileSet._tileWidth, j * tempTileSet._tileHeight);
+                    quad[1].position = sf::Vector2f((i + 1) * tempTileSet._tileWidth, j * tempTileSet._tileHeight);
+                    quad[2].position = sf::Vector2f((i + 1) * tempTileSet._tileWidth, (j + 1) * tempTileSet._tileHeight);
+                    quad[3].position = sf::Vector2f(i * tempTileSet._tileWidth, (j + 1) * tempTileSet._tileHeight);
+
+                    // define its 4 texture coordinates
+                    quad[0].texCoords = sf::Vector2f(tu * tempTileSet._tileWidth, tv * tempTileSet._tileHeight);
+                    quad[1].texCoords = sf::Vector2f((tu + 1) * tempTileSet._tileWidth, tv * tempTileSet._tileHeight);
+                    quad[2].texCoords = sf::Vector2f((tu + 1) * tempTileSet._tileWidth, (tv + 1) * tempTileSet._tileHeight);
+                    quad[3].texCoords = sf::Vector2f(tu * tempTileSet._tileWidth, (tv + 1) * tempTileSet._tileHeight);
+
+                    // Layer has been stitched
+                    _stitchedLayers.push_back(tempVArray);
+
+                    i++;
+                    if(i >= thisLayer._width)
+                    {
+                        i = 0;
+                        j++;
+                    }
+                }
+            }
+        }//if(_dataLoaded)
+
+    }
+
+    void TileMap::draw_layer(sf::RenderTarget & target, int layerNumber)
+    {
+        //target.draw(_stitchedLayers[layerNumber], )
+    }
+
+    TileSet& TileMap::get_tileset_with_gid(int gid)
+    {
+        for(auto it = _tileSetVector.begin(); it != _tileSetVector.end(); ++it)
+        {
+            //auto nx = std::next(it, 1);
+            if(gid >= it->_firstGid and gid < it->_firstGid + it->_tileCount)
+            {
+                // We found the correct tileset, so return it
+                return *it;
+            }
+
+        }
+    }
+
+    unsigned int TileMap::get_width_pixel()
+    {
+        return _widthInPixels;
+    }
+
+    unsigned int TileMap::get_height_pixel()
+    {
+        return _heightInPixels;
+    }
+
+    unsigned int TileMap::get_width_tiles()
+    {
+        return _widthInTiles;
+    }
+
+    unsigned int TileMap::get_height_tiles()
+    {
+        return _heightInTiles;
+    }
+
+    unsigned int TileMap::get_tile_width()
+    {
+        return _tileWidth;
+    }
+
+    unsigned int TileMap::get_tile_height()
+    {
+        return _tileHeight;
+    }
+
+    TileSet::TileSet() :
+        _firstGid(0),
+        _tileWidth(0),
+        _tileHeight(0),
+        _tileCount(0),
+        _columns(0),
+        _imageWidth(0),
+        _imageHeight(0),
+        _tileSetID("TileSet"),
+        _imageSource("Image Source"),
+        _tileSetTexture()
+    {}
+
+    Layer::Layer() :
+        _layerName("Layer Name"),
+        _width(0),
+        _height(0),
+        _gidCodes()
+    {}
+
+    void Layer::parse_raw_layer_data(std::string rawData)
+    {
+
+        std::stringstream ss(rawData);
+        std::string number;
+
+        while(std::getline(ss, number, ','))
+        { 
+            // Some of these resulting strings have endline chars. Remove them.
+            number.erase(std::remove(number.begin(), number.end(), '\n'), number.end());
+            
+            // Convert the string into an int and add it to the vector
+            _gidCodes.push_back(std::stoi(number));
+        }
+
+    }
+
+} // namespace CRE

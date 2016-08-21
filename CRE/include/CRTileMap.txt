@@ -1,0 +1,180 @@
+// /**
+// * @file CRTileMap.hpp
+// * @author Jake Shepherd
+// */
+
+
+// #ifndef CRTILEMAP_HPP
+// #define CRTILEMAP_HPP
+
+// #include <SFML/Graphics/Texture.hpp>
+// #include <SFML/Graphics/Sprite.hpp>
+// #include <SFML/Graphics/Image.hpp>
+// #include <SFML/Graphics/VertexArray.hpp>
+// #include <SFML/Graphics/Vertex.hpp>
+// #include <iostream> //TODO: delete this eventually
+// #include <string>
+// #include <cstdlib>
+// #include <vector>
+// #include <sstream>
+// #include "CRTypes.hpp"
+// #include "CREntity.hpp"
+// #include "CREntityManager.hpp"
+// #include "pugixml.hpp"
+
+// namespace CRE
+// {
+
+//     class TileMapObject : public Entity
+//     {
+//         public:
+
+//             TileMapObject(int positionX, int positionY, unsigned int width, unsigned int height) :
+//                 Entity(positionX, positionY, width, height)
+//             {}
+
+//             virtual void process_events(){}
+
+//             virtual void init(){}
+
+//             virtual void cleanup(){}
+
+//             virtual void update(float appTime){}
+
+//             virtual void draw(){}
+//     };
+
+//     class Layer
+//     {
+//         public:
+
+//             Layer();
+
+//             void parse_raw_layer_data(std::string rawData);
+
+//             std::string _layerName;
+
+//             unsigned int _width, _height;
+
+//             std::vector<int> _gidCodes;
+//     };
+
+//     class TileSet
+//     {
+//         public:
+
+//             /**
+//             * Parameterized constructor
+//             */
+//             //TileSet(unsigned int firstGid, unsigned int tileWidth, unsigned int tileHeight,
+//             // unsigned int tileCount, unsigned int columns, std::string tileSetID,
+//             //  std::string imageSource);
+
+//             /**
+//             * Default constructor
+//             */
+//             TileSet();
+
+//             unsigned int _firstGid, _tileWidth, _tileHeight, _tileCount, _columns,
+//                 _imageWidth, _imageHeight;
+
+//             std::string _tileSetID, _imageSource;
+
+//             sf::Texture _tileSetTexture;
+
+//     };
+
+//     class TileMap
+//     {
+//         public:
+
+//             /**
+//             * Constructor requires the string ID for this tilemap
+//             * and the directory where the tilemap data is stored.
+//             */
+//             TileMap(std::string tileMapID, std::string filename);
+
+//             /**
+//             * Deconstructor. Defined in case it's needed.
+//             * TODO: is this needed?
+//             */
+//             ~TileMap();
+
+//             *
+//             * Loads data from tilemap data. This function sets _tileDataLoaded
+//             * flag to true and returns true if the data was loaded sucessfully.
+//             * Error message is set if there was an error loading the data. Call
+//             * this function before doing any drawing of this tilemap.
+            
+//             bool load_data();
+
+//             /**
+//             * Returns true if the tilemap was loaded correctly.
+//             */
+//             bool is_loaded();
+
+//             /**
+//             * Returns the error message. If no error occured during load,
+//             * the message returned is "No error"
+//             */
+//             std::string get_error();
+
+//             /**
+//             * If the data loaded correctly, this function will extract the
+//             * tilemap data from the XML file. This function should be called
+//             * after load_data is called.
+//             */
+//             void parse_data();
+
+//             void stitch_layers();
+
+//             void draw_layer(sf::RenderTarget & target, int layerNumber);
+
+//             /**
+//             * 
+//             */
+//             unsigned int get_width_pixel();
+//             unsigned int get_height_pixel();
+//             unsigned int get_width_tiles();
+//             unsigned int get_height_tiles();
+//             unsigned int get_tile_width();
+//             unsigned int get_tile_height();
+
+
+//         private:
+
+//             TileSet& get_tileset_with_gid(int gid);
+
+//             /// The XML Document that will be loaded into memory
+//             pugi::xml_document _pugiDoc;
+//             //pugi::xml_parse_result _pugiResult;
+
+//             /// The string ID for this tilemap
+//             std::string _tileMapID;
+
+//             /// A string message in the event that the user wants to know what happened
+//             /// if there was an error.
+//             std::string _errorMessage;
+
+//             /// The string that holds the directory of the file being loaded from.
+//             std::string _fileName;
+
+//             /// The flag that determines if there is correct data.
+//             bool _tileDataLoaded;
+
+//             /// The width and height of the tilemap in pixels
+//             unsigned int _widthInPixels, _heightInPixels, _tileWidth, _tileHeight,
+//                          _widthInTiles, _heightInTiles;
+
+//             std::vector<TileSet> _tileSetVector;
+//             std::vector<Layer> _layerVector;
+//             //std::vector<sf::Sprite> _stitchedLayers;
+//             std::vector<sf::VertexArray> _stitchedLayers;
+//             //std::vector<Entity> _objectVector;
+
+//             EntityManager _objectGroup;
+//     };
+
+// }
+
+// #endif
