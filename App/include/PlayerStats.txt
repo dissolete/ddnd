@@ -1,0 +1,7 @@
+6
+Eric 100 20 0 0 0
+Jake 100 20 0 0 0
+Baylee 100 20 0 0 0
+Jessica 100 20 0 0 0
+Ashton 100 20 0 0 0
+Alexa 100 20 0 0 0

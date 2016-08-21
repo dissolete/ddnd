@@ -1,0 +1,4 @@
+3
+RedEyesGrunt 20 0 0 0 0
+RedEyesOfficer 40 20 0 0 0
+BrunoTheBloodDragon 200 200 0 0 0
