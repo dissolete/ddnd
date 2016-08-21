@@ -1,7 +1,9 @@
 #include "DDNDApp.hpp"
 
 DDNDApp::DDNDApp(const std::string theTitle, int windowWidth, int windowHeight):
-    CRE::App(theTitle, windowWidth, windowHeight)
+    CRE::App(theTitle, windowWidth, windowHeight),
+    _groups(),
+    _tilemaps()
 {}
 
 DDNDApp::~DDNDApp(){}
@@ -12,7 +14,7 @@ void DDNDApp:init_asset_handlers(void)
     _textManager.set_font("resources/arial.ttf");
 
     // Load tilemaps
-    
+
 }
 
 void TestApp::init_screen_factory(void)
