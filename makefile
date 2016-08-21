@@ -100,7 +100,7 @@ $(BIN)/CRTextManager.o: $(SRC)/CRTextManager.cpp $(INC)/CRTextManager.hpp
 $(BIN)/CRSoundManager.o: $(SRC)/CRSoundManager.cpp $(INC)/CRSoundManager.hpp
 	$(CC) $(CFLAGS) $(SRC)/CRSoundManager.cpp -o $(BIN)/CRSoundManager.o
 
-$(BIN)/CRStatManager.o: $(SRC)/CRStatManager.cpp $(INC)/CRStatManager.hpp
+$(BIN)/CRStatManager.o: $(SRC)/CRStatManager.cpp $(INC)/CRStatManager.hpp $(INC)/CRStat.hpp
 	$(CC) $(CFLAGS) $(SRC)/CRStatManager.cpp -o $(BIN)/CRStatManager.o
 
 $(BIN)/CRMath.o: $(SRC)/CRMath.cpp $(INC)/CRMath.hpp
@@ -108,6 +108,9 @@ $(BIN)/CRMath.o: $(SRC)/CRMath.cpp $(INC)/CRMath.hpp
 
 $(BIN)/CREntityManager.o: $(SRC)/CREntityManager.cpp $(INC)/CREntityManager.hpp
 	$(CC) $(CFLAGS) $(SRC)/CREntityManager.cpp -o $(BIN)/CREntityManager.o
+
+$(BIN)/CRTimer.o: $(SRC)/CRTimer.cpp $(INC)/CRTimer.hpp
+	$(CC) $(CFLAGS) $(SRC)/CRTimer.cpp -o $(BIN)/CRTimer.o
 
 $(BIN)/Action.o: $(SRC)/Action.cpp $(INC)/Action.hpp
 	$(CC) $(CFLAGS) $(SRC)/Action.cpp -o $(BIN)/Action.o
@@ -127,18 +130,21 @@ $(BIN)/Property.o: $(SRC)/Property.cpp $(INC)/Property.hpp
 $(BIN)/CRGroup.o: $(SRC)/CRGroup.cpp $(INC)/CRGroup.hpp
 	$(CC) $(CFLAGS) $(SRC)/CRGroup.cpp -o $(BIN)/CRGroup.o
 
+$(BIN)/CRGroupManager.o: $(SRC)/CRGroupManager.cpp $(INC)/CRGroupManager.hpp
+	$(CC) $(CFLAGS) $(SRC)/CRGroupManager.cpp -o $(BIN)/CRGroupManager.o
+
+$(BIN)/CRTileMapManager.o: $(SRC)/CRTileMapManager.cpp $(INC)/CRTileMapManager.hpp
+	$(CC) $(CFLAGS) $(SRC)/CRTileMapManager.cpp -o $(BIN)/CRTileMapManager.o
+
 #--------------------------------#
 # ADD NEW APP OBJECT FILES BELOW #
 #--------------------------------#
 
-$(BIN)/Main.o: $(APPSRC)/Main.cpp $(APPINCLUDES) $(CRINCLUDES)
-	$(CC) $(CFLAGS) $(APPSRC)/main.cpp -o $(BIN)/main.o
+$(BIN)/DDNDApp.o: $(APPSRC)/DDNDApp.cpp $(APPINC)/DDNDApp.hpp
+	$(CC) $(CFLAGS) $(APPSRC)/DDNDApp.cpp -o $(BIN)/DDNDApp.o
 
-$(BIN)/TestApp.o: $(APPSRC)/TestApp.cpp $(APPINC)/TestApp.hpp
-	$(CC) $(CFLAGS) $(APPSRC)/TestApp.cpp -o $(BIN)/TestApp.o
-
-$(BIN)/TestState.o: $(APPSRC)/TestState.cpp $(APPINC)/TestState.hpp
-	$(CC) $(CFLAGS) $(APPSRC)/TestState.cpp -o $(BIN)/TestState.o
+$(BIN)/PlayState.o: $(APPSRC)/PlayState.cpp $(APPINC)/PlayState.hpp
+	$(CC) $(CFLAGS) $(APPSRC)/PlayState.cpp -o $(BIN)/PlayState.o
 
 .PHONY: run clean clean-o help
 
