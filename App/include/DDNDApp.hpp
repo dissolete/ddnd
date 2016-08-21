@@ -4,8 +4,10 @@
 #include "CRApp.hpp"
 #include "CRTileMapManager.hpp"
 #include "CRGroupManager.hpp"
+#include "PlayState.hpp"
+#include "SplashState.hpp"
 
-class DDNDApp : public App
+class DDNDApp : public CRE::App
 {
     public:
         ///////////////
