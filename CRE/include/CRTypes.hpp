@@ -26,11 +26,21 @@ namespace CRE
 	class CRSound;
 	class CRText;
 
+	template <typename T>
+	class Stat;
+
+	class Timer;
+
     // Manager Classes
     class StateManager;
     class TextManager;
     class SoundManager;
     class EntityManager;
+    class StatManager;
+    class TimerManager;
+	class GroupManager;
+	class TileMapManager;
+
 
     // Unclassified atm
     class CRTileMap;

@@ -8,7 +8,7 @@
 # Last updated: 7/30/2016    #
 #----------------------------#
 
-TARGET = App
+TARGET = DDND
 
 SRC = CRE/src
 INC = CRE/include
@@ -127,12 +127,15 @@ $(BIN)/Property.o: $(SRC)/Property.cpp $(INC)/Property.hpp
 $(BIN)/CRGroup.o: $(SRC)/CRGroup.cpp $(INC)/CRGroup.hpp
 	$(CC) $(CFLAGS) $(SRC)/CRGroup.cpp -o $(BIN)/CRGroup.o
 
+$(BIN)/CRGroupManager.o: $(SRC)/CRGroupManager.cpp $(INC)/CRGroupManager.hpp
+	$(CC) $(CFLAGS) $(SRC)/CRGroupManager.cpp -o $(BIN)/CRGroupManager.o
+
 #--------------------------------#
 # ADD NEW APP OBJECT FILES BELOW #
 #--------------------------------#
 
 $(BIN)/Main.o: $(APPSRC)/Main.cpp $(APPINCLUDES) $(CRINCLUDES)
-	$(CC) $(CFLAGS) $(APPSRC)/main.cpp -o $(BIN)/main.o
+	$(CC) $(CFLAGS) $(APPSRC)/main.cpp -o $(BIN)/Main.o
 
 $(BIN)/TestApp.o: $(APPSRC)/TestApp.cpp $(APPINC)/TestApp.hpp
 	$(CC) $(CFLAGS) $(APPSRC)/TestApp.cpp -o $(BIN)/TestApp.o

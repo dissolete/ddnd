@@ -14,7 +14,7 @@
 #include <iostream>
 
 #include "CRCore.hpp"
-#include "TestApp.hpp"
+#include "DNDDApp.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -22,17 +22,17 @@ int main(int argc, char* argv[])
     int exitCode = CRE::STATUS_OK;
 
     // Create our app
-    CRE::App * testApp = new(std::nothrow) TestApp("Testing", 512, 512);
-    assert(NULL != testApp and "main() can't create application");
+    CRE::App * dndapp = new(std::nothrow) TestApp("DDND", 800, 600);
+    assert(NULL != dndapp and "main() can't create application");
 
-    //testApp->set_max_updates(1);
+    //dndapp->set_max_updates(1);
 
     // Execute the application
     exitCode = testApp->run();
 
-    delete testApp;
+    delete dndapp;
 
-    testApp = NULL;
+    dndapp = NULL;
 
     return exitCode;
 }
