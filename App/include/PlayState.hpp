@@ -81,11 +81,11 @@ class PlayState : public CRE::State
         * and moves it accordingly. Function is private because this state
         * should be the only thing that calls this function.
         */
-        void update_view();
+        void update_view(float);
 
         /// How long the mouse must be in the CAMERA_MOVE_MARGIN before the
         /// camera actually moves is 1 / CAMERA_MOVE_SPEED
-        const float CAMERA_MOVE_SPEED = 20;
+        const float CAMERA_MOVE_SPEED = 500;
 
         /// The number of pixels the camera moves per "jump"
         const float CAMERA_MOVE_PIXELS = 32;
