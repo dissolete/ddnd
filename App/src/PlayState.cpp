@@ -61,13 +61,13 @@ void PlayState::handle_events(sf::Event theEvent)
 
 void PlayState::update()
 {
-    // Update the view if needed
-    update_view();
+
 }
 
-void PlayState::update_variable(float elaspedTime)
+void PlayState::update_variable(float elapsedTime)
 {
-
+    // Update the view if needed
+    update_view(elapsedTime);
 }
 
 void PlayState::draw()
@@ -93,7 +93,7 @@ void PlayState::handle_cleanup()
 
 }
 
-void PlayState::update_view()
+void PlayState::update_view(float elapsedTime)
 {
     sf::Vector2i mousePixelPos = sf::Mouse::getPosition(_theApp._window);
 
@@ -101,68 +101,39 @@ void PlayState::update_view()
     sf::Vector2f viewCenter = _theView.getCenter();
     sf::Vector2u viewSize = _theApp._window.getSize();
 
-    /* TODO: The logic in this function can possibly be rearranged to
-    speed things up. For example, instead of starting the if statement off
-    with a check to see if it's been enough time to move the camera, first
-    check if the mouse is in the the CAMERA_MOVE_MARGIN. Since it is more
-    likely that the mouse is not in the margin, there may be less function
-    calls on average each time this update_view function is called if the
-    logic is rearranged.
+    // Calculate offset to move based on elapsed time since last frame
+    float deltaX = elapsedTime * CAMERA_MOVE_SPEED;
 
-    EX: (psuedocode)
-    if mouse is in margin: <-- This is most likely to fail, 1 if statement checked, skipping the below
-        if camera is okay to move: <-- skipped on average
-            specifically check which margin the mouse is in: <-- skipped on average
-                adjust camera
-            check if the tilemap can fit:
-                readjust camera as needed
+    // Get the current active tilemap being rendered to the screen
+    CRE::TileMap &activeMap = _tileMapManager.get_active();
 
-    Current:
-    if camera is okay to move: <-- More likely to succeed
-        specifically check which margin the mouse is in: <-- Resulting in these if statements being called more on average
-            adjust camera
-        check if tilemap can fit: <-- Tested more on average
-            readjust camera as needed
+    // Check if the mouse has moved into the margin to move the camera
+    if(mousePixelPos.x < CAMERA_MOVE_MARGIN)
+        viewCenter.x -= deltaX;
+    else if(mousePixelPos.x > viewSize.x - CAMERA_MOVE_MARGIN)
+        viewCenter.x += deltaX;
+    if(mousePixelPos.y < CAMERA_MOVE_MARGIN)
+        viewCenter.y -= deltaX;
+    else if(mousePixelPos.y > viewSize.y - CAMERA_MOVE_MARGIN)
+        viewCenter.y += deltaX;
 
-    The EX code might be a little messier, but should run faster. The question
-    is, is it really worth the speed change?
-    */
-    if(CRE::State::get_elapsed_time() - _timeWhenCameraMoved > 1 / CAMERA_MOVE_SPEED)
+    // Can the tilemap fit inside the window currently?
+    if(_theApp._window.getSize().x < activeMap.get_width() and
+        _theApp._window.getSize().y < activeMap.get_height())
     {
-        _timeWhenCameraMoved = CRE::State::get_elapsed_time();
-
-        if(mousePixelPos.x < CAMERA_MOVE_MARGIN)
-            viewCenter.x -= CAMERA_MOVE_PIXELS;
-        else if(mousePixelPos.x > viewSize.x - CAMERA_MOVE_MARGIN)
-            viewCenter.x += CAMERA_MOVE_PIXELS;
-        if(mousePixelPos.y < CAMERA_MOVE_MARGIN)
-            viewCenter.y -= CAMERA_MOVE_PIXELS;
-        else if(mousePixelPos.y > viewSize.y - CAMERA_MOVE_MARGIN)
-            viewCenter.y += CAMERA_MOVE_PIXELS;
-
-
-        // UNCOMMENT/COMMENT BELOW THIS IF YOU DO/DO NOT WANT THE VIEW TO MOVE
-        // OUTSIDE THE BOUNDS OF THE TILEMAP
-
-        // DONT try readjusting theView if the tilemap is not large enough
-        // to fit the window otherwise crazy shit happens. This if statement
-        // checks to see if the tilemap can fit the current windowsize
-        if(_theApp._window.getSize().x < _tileMapManager.get_active().get_width()
-            and _theApp._window.getSize().y < _tileMapManager.get_active().get_height())
-        {
-            // Test if the view has moved outside the bounds of the tilemap, if it has
-            // then move it back
-            if(viewCenter.x < viewSize.x / 2)
-                viewCenter.x += CAMERA_MOVE_PIXELS;
-            else if(viewCenter.x > _tileMapManager.get_active().get_width() - viewSize.x / 2)
-                viewCenter.x -= CAMERA_MOVE_PIXELS;
-            if(viewCenter.y < viewSize.y / 2)
-                viewCenter.y += CAMERA_MOVE_PIXELS;
-            else if(viewCenter.y > _tileMapManager.get_active().get_height() - viewSize.y / 2)
-                viewCenter.y -= CAMERA_MOVE_PIXELS;
-        }
+        // If the tilemap CAN fit inside the window, then check if the
+        // camera has moved too far (IE the camera has moved off the
+        // edges of the tilemap). Move the camera back if it has.
+        if(viewCenter.x < viewSize.x / 2)
+            viewCenter.x += (viewSize.x / 2) - viewCenter.x;
+        else if(viewCenter.x > activeMap.get_width() - viewSize.x / 2)
+            viewCenter.x -= viewCenter.x - (activeMap.get_width() - viewSize.x / 2);
+        if(viewCenter.y < viewSize.y / 2)
+            viewCenter.y += viewSize.y / 2 - viewCenter.y;
+        else if(viewCenter.y > activeMap.get_height() - viewSize.y / 2)
+            viewCenter.y -= viewCenter.y - (activeMap.get_height() - viewSize.y / 2);
     }
-
+    
     // Set the new viewCenter if it was changed
     _theView.setCenter(viewCenter);
 }
