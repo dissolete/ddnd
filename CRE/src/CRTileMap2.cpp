@@ -130,7 +130,9 @@ TileMap::TileMap(std::string tileMapID, std::string xmlDataFilename) :
         _tileDataLoaded(false),
         _tilesets(),
         _objectGroup(),
-        _pugiDoc()
+        _pugiDoc(),
+        _tilemapWidth(0),
+        _tilemapHeight(0)
 {
 }
 
@@ -179,6 +181,16 @@ std::string TileMap::get_ID() const
         return _tileMapID;
 }
 
+unsigned int TileMap::get_width() const
+{
+    return _tilemapWidth;
+}
+
+unsigned int TileMap::get_height() const
+{
+    return _tilemapHeight;
+}
+
 Group& TileMap::get_group(std::string groupID)
 {
     //TODO: try-catch
@@ -205,6 +217,13 @@ void TileMap::parse_data()
 
         // Get head node for the document tree
         pugi::xml_node root = _pugiDoc.document_element();
+
+        // Get tilemap width and height
+        _tilemapWidth = std::atoi(root.attribute("width").value())
+                    * std::atoi(root.attribute("tilewidth").value());
+
+        _tilemapHeight = std::atoi(root.attribute("height").value())
+                    * std::atoi(root.attribute("tileheight").value());
 
         // Iterate through children of root node
         for(pugi::xml_node child : root.children())

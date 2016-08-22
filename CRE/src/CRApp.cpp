@@ -7,7 +7,7 @@ namespace CRE
 	// Single instance of the most recently created App class
 	App * App::_gApp = NULL;
 
-	
+
 	App::App(const std::string windowTitle, int windowWidth, int windowHeight) :
 		_windowTitle(windowTitle),
 		_windowWidth(windowWidth),
@@ -112,7 +112,7 @@ namespace CRE
 
 	}
 
-	
+
 	void App::game_loop(void)
 	{
 		// Clock used in restricting update loop to a fixed rate
@@ -190,8 +190,6 @@ namespace CRE
 					break;
 				case sf::Event::LostFocus:   // window clicked off
 					theState.pause();
-				case sf::Event::Resized:     // window resized
-					break;
 				default:                     // current active state will handle
 					theState.handle_events(event);
 
