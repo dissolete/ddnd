@@ -83,12 +83,8 @@ class PlayState : public CRE::State
         */
         void update_view(float);
 
-        /// How long the mouse must be in the CAMERA_MOVE_MARGIN before the
-        /// camera actually moves is 1 / CAMERA_MOVE_SPEED
+        /// How fast the camera moves is elapsedTimeSinceLastFrame * CAMERA_MOVE_SPEED
         const float CAMERA_MOVE_SPEED = 500;
-
-        /// The number of pixels the camera moves per "jump"
-        const float CAMERA_MOVE_PIXELS = 32;
 
         /// The number of pixels away from the edge of the screen the mouse
         /// has to be in order for the camera to move
