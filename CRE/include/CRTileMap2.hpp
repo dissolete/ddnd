@@ -138,6 +138,9 @@ namespace CRE
             */
             std::string get_ID() const;
 
+            unsigned int get_width() const;
+            unsigned int get_height() const;
+
             /**
             * Returns a reference to a group contained by the tilemap.
             * Uncaught behavior if the groupID is not found.
@@ -160,6 +163,7 @@ namespace CRE
             std::string _filename;
             std::string _errorMessage;
             bool _tileDataLoaded;
+            unsigned int _tilemapWidth, _tilemapHeight;
 
             std::vector<TileSet> _tilesets;
             std::map<std::string, Group> _objects;
