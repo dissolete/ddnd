@@ -15,10 +15,10 @@ class DDNDApp : public CRE::App
         ///////////////
 
         /// The GroupManager to handle entities
-        CRE::GroupManager _groups;
+        CRE::GroupManager _groupManager;
 
         /// The TileMapManager to handle tilemaps
-        CRE::TileMapManager _tilemaps;
+        CRE::TileMapManager _tileMapManager;
 
         /**
         *
