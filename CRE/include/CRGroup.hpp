@@ -71,6 +71,11 @@ namespace CRE
             * Deallocates the entities included in this group.
             */
             void cleanup();
+
+            /**
+            * Returns a pointer to the entity given by the passed index
+            */
+            Entity* operator[](int index);
         private:
             std::vector<Entity*> _entities;
             std::string _ID;

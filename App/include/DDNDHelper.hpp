@@ -43,7 +43,7 @@ const int SQUARE_WIDTH = 32;
 * @param[in] a string representing the filename to read in
 * @param[in] a vector of person structs to store the people in, passed by reference
 */
-void read_in_stats(const std::string &filename, CRE::Group<person> &people){
+void read_in_stats(const std::string &filename, CRE::Group &people){
 
 	std::ifstream fin;
 	fin.open(filename);
@@ -76,7 +76,7 @@ void read_in_stats(const std::string &filename, CRE::Group<person> &people){
 /**
 * The reverse process of the read_in_stats function
 */
-void output_stats(const std::string &filename, const CRE::Group<person> &people){
+void output_stats(const std::string &filename, const CRE::Group &people){
 
 	std::ofstream fout;
 	fout.open(filename);
@@ -86,7 +86,7 @@ void output_stats(const std::string &filename, const CRE::Group<person> &people)
 	///Outputs each individual person
 	for(int i = 0; i < people.size(); i++){
 
-		person temp = people[i];
+		person temp = people[i] -> _properties.get("Statistics");
 		fout << temp.name << endl;
 		fout << temp.maxHP << ' ';
 		fout << temp.maxShields << ' ';

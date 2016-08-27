@@ -99,4 +99,9 @@ namespace CRE
             anEntity = NULL;
         }
     }
+
+    Entity* Group::operator[](int index){
+
+        return _entities[index];
+    }
 }
